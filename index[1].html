@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAS 2026 VAT Calculator</title>
+<style>
+/* ===== Base Styles ===== */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #222;
+    transition: background 0.3s, color 0.3s;
+}
+
+.dark-mode {
+    background: #121212;
+    color: #e6e6e6;
+}
+
+/* ===== App Container ===== */
+.app-container {
+    max-width: 480px;
+    width: 95%;
+    margin: 20px auto;
+    background: #fff;
+    padding: 25px 20px;
+    border-radius: 24px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+}
+
+.dark-mode .app-container {
+    background: #1f1f1f;
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+}
+
+/* ===== Header ===== */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    letter-spacing: 1px;
+    color: #007BFF;
+    margin-bottom: 5px;
+    font-size: 1.8rem;
+}
+
+h6 {
+    color: #555;
+    margin-top: 0;
+    font-size: 0.95rem;
+}
+
+.dark-mode h6 {
+    color: #ccc;
+}
+
+/* ===== Labels, Inputs & Buttons ===== */
+label {
+    font-weight: 600;
+    margin-top: 12px;
+    display: block;
+    font-size: 1rem;
+}
+
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 12px;
+    border: 1px solid #bbb;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+input[readonly] {
+    background: #efefef;
+}
+
+.dark-mode input[readonly] {
+    background: #2a2a2a;
+    color: #fff;
+}
+
+/* Buttons */
+button {
+    background: #007bff;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #7F00FF;
+}
+
+.dark-mode button {
+    background: #0a84ff;
+}
+
+/* ===== Tabs ===== */
+.toggle-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.toggle-button {
+    flex: 1 1 32%;
+    margin: 2px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #007bff;
+    border: 2px solid #007bff;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.toggle-button.active {
+    background: #7F00FF;
+    color: #fff;
+}
+
+.dark-mode .toggle-button {
+    background: #1f1f1f;
+    border-color: #0a84ff;
+    color: #fff;
+}
+
+.dark-mode .toggle-button.active {
+    background: #0a84ff;
+}
+
+/* ===== Tab Container Animation ===== */
+.tab-container {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s ease-in-out;
+}
+
+.tab-container.active {
+    opacity: 1;
+    max-height: 2000px;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 400px) {
+    h1 { font-size: 1.5rem; }
+    h6 { font-size: 0.85rem; }
+    label { font-size: 0.9rem; }
+    input, button { padding: 10px; font-size: 0.9rem; }
+    .toggle-button { padding: 8px; font-size: 0.85rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Dark Mode Toggle -->
+<button onclick="toggleDarkMode()" style="margin:10px 20px;">Toggle Dark Mode</button>
+
+<div class="app-container">
+
+    <!-- Header -->
+    <div class="header">
+        <h1>RAS 2026 VAT CALCULATOR</h1>
+        <h6>Professional • Accurate • Updated Rates for 2026</h6>
+    </div>
+
+    <!-- Tab Buttons -->
+    <div class="toggle-buttons">
+        <button class="toggle-button active" onclick="showApp(0)">Cost</button>
+        <button class="toggle-button" onclick="showApp(1)">VAT Inclusive Amount</button>
+        <button class="toggle-button" onclick="showApp(2)">Flat Rate</button>
+    </div>
+
+    <!-- APP 1 -->
+    <div id="app1-container" class="tab-container active">
+        <h3>VAT STANDARD RATE  – 2026</h3>
+        <label>Cost of goods/services:</label>
+        <input type="number" id="cost" min="0" placeholder="Enter amount">
+        <button onclick="calculateApp1()">Calculate</button>
+        <button onclick="resetForm('app1-container')">Reset</button>
+        <label>NHIL (2.5%):</label>
+        <input type="text" id="nh" readonly>
+        <label>GETFund Levy (2.5%):</label>
+        <input type="text" id="gf" readonly>
+        <label>VAT (15%):</label>
+        <input type="text" id="v" readonly>
+        <label>VAT Inclusive Amount:</label>
+        <input type="text" id="vi" readonly>
+    </div>
+
+    <!-- APP 2 -->
+    <div id="app2-container" class="tab-container">
+        <h3>VAT STANDARD RATE  – 2026</h3>
+        <label>VAT Inclusive Amount:</label>
+        <input type="number" id="vi2" min="0" placeholder="Enter VAT inclusive amount">
+        <button onclick="calculateApp2()">Calculate</button>
+        <button onclick="resetForm('app2-container')">Reset</button>
+        <label>NHIL (2.5%):</label>
+        <input type="text" id="nh2" readonly>
+        <label>GETFund Levy (2.5%):</label>
+        <input type="text" id="gf2" readonly>
+        <label>VATABLE Amount (Cost Only):</label>
+        <input type="text" id="va2" readonly>
+        <label>VAT (15%):</label>
+        <input type="text" id="v2" readonly>
+        <label>Cost of Goods and Services:</label>
+        <input type="text" id="c2" readonly>
+    </div>
+
+    <!-- APP 3 -->
+    <div id="app3-container" class="tab-container">
+        <h3>VAT FLAT RATE SCHEME </h3>
+        <label>Cost of Goods:</label>
+        <input type="number" id="c3" min="0" placeholder="Enter amount">
+        <button onclick="calculateApp3()">Calculate</button>
+        <button onclick="resetForm('app3-container')">Reset</button>
+        <label>VAT (3%):</label>
+        <input type="text" id="v3" readonly>
+        <label>VAT Inclusive Amount:</label>
+        <input type="text" id="vi3" readonly>
+    </div>
+
+</div>
+
+<script>
+// ===== Dark Mode Persistence =====
+if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+}
+
+// ===== Format Numbers =====
+function formatNumber(num) {
+    return Number(num).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ===== Reset Form =====
+function resetForm(sectionId) {
+    document.querySelectorAll(`#${sectionId} input`).forEach(input => input.value = "");
+}
+
+// ===== Tab Switching =====
+function showApp(index) {
+    const apps = ['app1-container','app2-container','app3-container'];
+    apps.forEach((id,i) => {
+        document.getElementById(id).classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.toggle-button').forEach((btn,i) => btn.classList.toggle('active', i === index));
+}
+
+// ===== APP 1 Calculation =====
+function calculateApp1() {
+    let cost = parseFloat(document.getElementById("cost").value);
+    if(isNaN(cost) || cost < 0) return alert("Enter a valid positive number");
+    let nh = 0.025 * cost;
+    let gf = 0.025 * cost;
+    let vat = 0.15 * cost;
+    let vi = cost + nh + gf + vat;
+    document.getElementById("nh").value = formatNumber(nh);
+    document.getElementById("gf").value = formatNumber(gf);
+    document.getElementById("v").value = formatNumber(vat);
+    document.getElementById("vi").value = formatNumber(vi);
+}
+
+// ===== APP 2 Calculation =====
+function calculateApp2() {
+    let vi = parseFloat(document.getElementById("vi2").value);
+    if(isNaN(vi) || vi < 0) return alert("Enter a valid positive number");
+    let cost = vi / 1.20;
+    let nh = 0.025 * cost;
+    let gf = 0.025 * cost;
+    let vat = 0.15 * cost;
+    document.getElementById("nh2").value = formatNumber(nh);
+    document.getElementById("gf2").value = formatNumber(gf);
+    document.getElementById("va2").value = formatNumber(cost);
+    document.getElementById("v2").value = formatNumber(vat);
+    document.getElementById("c2").value = formatNumber(cost);
+}
+
+// ===== APP 3 Calculation =====
+function calculateApp3() {
+    let cost = parseFloat(document.getElementById("c3").value);
+    if(isNaN(cost) || cost < 0) return alert("Enter a valid positive number");
+    let vat = 0.03 * cost;
+    let vi = cost + vat;
+    document.getElementById("v3").value = formatNumber(vat);
+    document.getElementById("vi3").value = formatNumber(vi);
+}
+</script>
+
+</body>
+</html>
+
+
