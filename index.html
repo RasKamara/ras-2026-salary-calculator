@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAS 2026 SALARY CALCULATOR APP</title>
+
+<style>
+/* ===== THEME VARIABLES ===== */
+:root {
+  --bg: #f4f4f4;
+  --card: #ffffff;
+  --text: #333333;
+  --accent: #3498db;
+  --input-bg: #ffffff;
+  --input-border: #dddddd;
+  --output-bg: #dddddd;
+
+  --basic-bg: #eaf4ff;
+  --basic-text: #333333;
+}
+
+body.dark {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #f4f4f4;
+  --accent: #00aaff;
+  --input-bg: #1e1e1e;
+  --input-border: #444444;
+  --output-bg: #333333;
+
+  --basic-bg: #2a2a2a;
+  --basic-text: #ffffff;
+}
+
+/* ===== BASE STYLES ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+.container {
+  width: 100%;
+  max-width: 460px;
+  padding: 20px;
+  background-color: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: 1px solid var(--accent);
+}
+
+h1 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+/* ===== OUTPUT FIELDS ===== */
+.output-field {
+  display: none;
+  padding: 12px;
+  font-weight: bold;
+  margin-top: 8px;
+  border-radius: 6px;
+  background-color: var(--output-bg);
+  color: var(--text);
+}
+
+/* ===== BASIC SALARY HIGHLIGHT ===== */
+.highlight-basic {
+  background-color: var(--basic-bg);
+  color: var(--basic-text);
+  border: 2px solid var(--accent);
+  animation: pulse 0.8s ease-in-out;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ===== BUTTONS ===== */
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--accent);
+  color: #ffffff;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* ===== TOGGLE BAR ===== */
+.toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.toggle button {
+  width: 50%;
+}
+
+/* ===== PRINT ===== */
+@media print {
+  .toggle, button { display: none; }
+  body { background: white; color: black; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>RAS 2026 SALARY CALCULATOR APP</h1>
+
+  <div class="toggle">
+    <button onclick="toggleDark()">🌙 Dark Mode</button>
+    <button onclick="window.print()">🖨 Print</button>
+  </div>
+
+  <label>SALARY LEVEL</label>
+  <input type="number" id="salaryLevelInput" placeholder="Enter salary level">
+
+  <label>STEP</label>
+  <input type="number" id="stepInput" placeholder="Enter step">
+
+  <button onclick="calculate()">Calculate</button>
+
+  <!-- OUTPUTS -->
+  <label class="output-field">BASIC SALARY</label>
+  <input id="bs" class="output-field highlight-basic" readonly>
+
+  <label class="output-field">INTERIM PREMIUM</label>
+  <input id="ip" class="output-field" readonly>
+
+  <label class="output-field">INTERIM SUPPORT ALLOWANCE</label>
+  <input id="isa" class="output-field" readonly>
+
+  <label class="output-field">GOV. MACHINERY ALLOWANCE</label>
+  <input id="gma" class="output-field" readonly>
+
+  <label class="output-field">GROSS SALARY</label>
+  <input id="gs" class="output-field" readonly>
+
+  <label class="output-field">SSNIT</label>
+  <input id="sn" class="output-field" readonly>
+
+  <label class="output-field">TIER 3</label>
+  <input id="tt" class="output-field" readonly>
+
+  <label class="output-field">CLOGSAG FUND</label>
+  <input id="cf" class="output-field" readonly>
+
+  <label class="output-field">CLOGSAG DEDUCTIONS</label>
+  <input id="cd" class="output-field" readonly>
+
+  <label class="output-field">INCOME TAX</label>
+  <input id="ic" class="output-field" readonly>
+
+  <label class="output-field">NET SALARY</label>
+  <input id="ns" class="output-field" readonly>
+</div>
+
+<script>
+const salaryData = {
+  25:{1:13086.49,2:13308.90,3:13535.22,4:13765.32,5:13999.32,6:14237.33,7:14479.33},
+  24:{1:11435.48,2:11629.90,3:11827.59,4:12028.67,5:12233.16,6:12441.12,7:12652.61,8:12867.71},
+  23:{1:9992.80,2:10162.69,3:10335.43,4:10511.14,5:10689.83,6:10871.56,7:11056.37,8:11244.33}
+};
+
+function ghs(x){
+  return x.toLocaleString('en-US',{style:'currency',currency:'GHS'});
+}
+
+function calculate(){
+  const level = salaryData[salaryLevelInput.value];
+  const basic = level?.[stepInput.value];
+  if(!basic){ alert("Invalid salary level or step"); return; }
+
+  const IP = 0.15 * basic;
+  const ISA = 0.18 * basic;
+  const GMA = 0.20 * basic;
+  const allowance = (salaryLevelInput.value>=23)?6183.53:0;
+  const GS = basic + IP + ISA + GMA + allowance;
+
+  const SN = 0.055 * basic;
+  const TT = 0.05 * basic;
+  const CF = 0.02 * basic;
+  const CD = 0.02 * basic;
+
+  let tax = 0, ci = GS - SN - TT;
+  const slabs=[402,110,130,3000,16395,29963,50000];
+  const rates=[0,0.05,0.1,0.175,0.25,0.3,0.35];
+  for(let i=0;i<slabs.length && ci>0;i++){
+    let t=Math.min(ci,slabs[i]);
+    tax+=t*rates[i];
+    ci-=t;
+  }
+
+  const NS = GS - SN - TT - CF - CD - tax;
+
+  bs.value = ghs(basic);
+  ip.value = ghs(IP);
+  isa.value = ghs(ISA);
+  gma.value = ghs(GMA);
+  gs.value = ghs(GS);
+  sn.value = ghs(SN);
+  tt.value = ghs(TT);
+  cf.value = ghs(CF);
+  cd.value = ghs(CD);
+  ic.value = ghs(tax);
+  ns.value = ghs(NS);
+
+  document.querySelectorAll('.output-field').forEach(e=>e.style.display='block');
+}
+
+function toggleDark(){
+  document.body.classList.toggle('dark');
+}
+</script>
+
+</body>
+</html>
